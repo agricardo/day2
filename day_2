@@ -1,0 +1,141 @@
+Exercise #1
+Write a query which returns the number of housing units for sale in each region on every month of January 
+since 1983: (table: tutorial.us_housing_units)
+    SELECT year, south, west, midwest, northeast 
+    FROM tutorial.us_housing_units 
+    WHERE year >= 1983 
+    AND month_name = 'January';
+
+Exercise #2
+Show all the monthly housing unit data starting on january of 2014.
+    SELECT year, month 
+    FROM tutorial.us_housing_units 
+    WHERE year >= 2014 
+    AND month_name = 'January';
+
+Exercise #3
+Show the monthly sum of all available housing units every month through the financial crisis (2008 and onward).
+ Sum all regions into one, don't split it up by region. Your output table should have year, month, and total housing units.
+    SELECT year, month_name, south + west + midwest + northeast AS total_housing_units   
+    FROM tutorial.us_housing_units 
+    WHERE year >= 2008;
+
+Exercise #4
+Show the monthly sum of all available housing units every month during years of real estate crises (1979, 1980, 2001, 2008).
+ Sum all regions into one, don't split it up by region. 
+    SELECT year, month_name, south + west + midwest + northeast AS total_housing_units   
+    FROM tutorial.us_housing_units 
+    WHERE year = 2008
+    OR year = 2001
+    OR year = 1980
+    OR year = 1979;
+
+Exercise #5
+Unguided: Find the total housing units available in the last quarter (per month) of every year since 2003
+    SELECT  month_name, south + west + midwest + northeast AS total_housing_units   
+    FROM tutorial.us_housing_units 
+    WHERE year >= 2003
+    AND month_name = 'October'
+    OR month_name = 'November'
+    OR month_name = 'December';
+
+Exercise #6
+Refactor above query to restrict fields and relabel to year, month (month name) and each region:
+    SELECT year, month_name, south, west, midwest, northeast  
+    FROM tutorial.us_housing_units 
+    WHERE year >= 2003
+    AND month_name = 'October'
+    OR month_name = 'November'
+    OR month_name = 'December';
+
+Exercise #7
+Get the YEARLY sums of each region since 1987. Display the following columns: year, sum-midwest, sum-northeast, sum-south, sum-west.
+ Make sure results are sorted by year, oldest to newest.
+    SELECT year, SUM(south), SUM(midwest), SUM(west), SUM(northeast)
+    FROM tutorial.us_housing_units 
+    WHERE year >= 1987
+    GROUP BY year
+    ORDER BY year;
+
+Exercise #8
+Now modify that query from above so you get the yearly AVERAGE rather than sum. Round to the nearest hundredth.*
+    SELECT year, floor(AVG(south + midwest + west + northeast)) 
+    FROM tutorial.us_housing_units 
+    GROUP BY year
+    ORDER BY year;
+
+Exercise #9
+Unguided: Get the companies from crunchbase.companies which are located in the los angeles region. Show all columns.*
+    SELECT name
+    FROM crunchbase.companies
+    WHERE region= 'Los Angeles';
+
+Exercise #10
+Unguided: Build a table where you show the name and total funding raised (value of funding_total_usd column) for all Miami based companies.*
+    SELECT name, funding_total_usd
+    FROM crunchbase.companies
+    WHERE region= 'Miami';
+
+Exercise #11
+Now take the above query and sort it from greatest fund raising to lowest.*
+    SELECT name, funding_total_usd
+    FROM crunchbase.companies
+    WHERE region= 'Miami'
+    ORDER BY funding_total_usd;
+
+Exercise #12
+Guided: Get the miami companies and their funding, sorted from most funded to least.
+    SELECT name
+    FROM crunchbase.companies
+    WHERE region= 'Miami'
+    ORDER BY funding_total_usd;
+
+Exercise #13
+In the tutorial.crunchbase_investments table, find all angel investor activity in Miami. The type of investor is in the funding_round_type 
+column. Show the company name, investor name, and raised amount. Sort it by the raised amount (desc).
+    SELECT company_name, investor_name, raised_amount_usd
+    FROMtutorial.crunchbase_investments
+    WHERE funding_round_type = 'angel'
+    AND investor_city = 'Miami'
+    ORDER BY raised_amount_usd;
+
+Exercise #14
+(Unguided) Use the tutorial.crunchbase_investments table to find the total amount raised by each company in Miami. In your results,
+ show the company name, and the total amount raised. Sort by amount raised (greater to smaller)
+    SELECT company_name, raised_amount_usd
+    FROM tutorial.crunchbase_investments
+    WHERE investor_city = 'Miami'
+    ORDER BY raised_amount_usd;
+
+Exercise #15
+(Unguided) Use the tutorial.crunchbase_investments table to find the total amount raised in Miami per company category.
+ In your results, show each company category and the amount of money that has been invested into it, ordered descendingly.
+
+        SELECT raised_amount_usd, company_category_code, company_city
+        FROM tutorial.crunchbase_investments 
+        WHERE company_city = 'Miami'
+        ORDER BY raised_amount_usd desc
+
+Exercise #16
+Cover the concept of nesting Selects.
+
+
+Exercise #17
+Use the tutorial.crunchbase_investments table to find all the companies nationwide which have raised more money than brightstar
+    SELECT company_name, raised_amount_usd
+    FROM tutorial.crunchbase_investments
+    WHERE raised_amount_usd > 
+    (SELECT raised_amount_usd
+    FROM tutorial.crunchbase_investments
+    WHERE company_name = 'Brightstar')
+    ORDER BY company_name;
+
+Exercise #18
+Use the tutorial.crunchbase_investments table to find the investors who have invested more money than "Silver Lake Partners"
+    SELECT investor_name, SUM(raised_amount_usd)
+    FROM tutorial.crunchbase_investments
+    WHERE raised_amount_usd > 
+    (SELECT SUM(raised_amount_usd)
+    FROM tutorial.crunchbase_investments
+    WHERE investor_name = 'Silver Lake Partners')
+    GROUP BY investor_name;
